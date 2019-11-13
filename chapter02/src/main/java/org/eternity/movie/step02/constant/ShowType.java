@@ -11,9 +11,11 @@ public enum ShowType {
     TWO_DIMENSION("2D");
 
     private String value;
+
     public String getValue() {
         return value;
     }
+
     ShowType(String value) {
         this.value = value;
     }

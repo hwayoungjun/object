@@ -2,7 +2,9 @@ package org.eternity;
 
 import org.eternity.money.Money;
 import org.eternity.movie.step02.*;
+import org.eternity.movie.step02.constant.ShowType;
 import org.eternity.movie.step02.pricing.AmountDiscountPolicy;
+import org.eternity.movie.step02.pricing.NoneDiscountPolicy;
 import org.eternity.movie.step02.pricing.PercentDiscountPolicy;
 import org.eternity.movie.step02.pricing.SequenceCondition;
 import org.junit.Test;
@@ -59,5 +61,38 @@ public class ValidateBehaviorTest {
         assertThat(screening.getMovieFee().getAmount(), is(BigDecimal.valueOf(10000)));
         //할인된 금액 검증
         assertThat(movie.calculateMovieFee(screening).getAmount(), is(BigDecimal.valueOf(9000)));
+    }
+
+    /**
+     * @date : 2019.11.14
+     * @author : hy.jun
+     * @description : 2019.11.13 스터디 의견 반영
+     */
+    @Test
+    public void validResultByOpinion() {
+        DiscountCondition discountCondition = new SequenceCondition(1);
+        DiscountPolicy discountPolicy = new PercentDiscountPolicy(10, discountCondition); //퍼센트 할인정책 10프로 적용
+
+        //영화정보 생성
+        Movie movie = new Movie.Builder()
+                .withTitle("")
+                .withFee(originalMoney)
+                .withRunningTime(duration)
+                .withRunningTimeAD(duration)
+                .withShowType(ShowType.IMAX) //부가세 10%
+                .withDiscountPolicy(new NoneDiscountPolicy()) //할인없음
+                .build();
+
+        //상영관정보 생성
+        Screening screening = new Screening(movie, 1, startDt);
+
+        //정가 검증
+        assertThat(screening.getMovieFee().getAmount(), is(BigDecimal.valueOf(10000)));
+        //할인된 금액 검증
+        assertThat(movie.calculateMovieFee(screening).getAmount(), is(BigDecimal.valueOf(11000)));
+
+        //부가세 비율 수정한 금액 검증
+        movie.setTaxRatio(0.2);
+        assertThat(movie.calculateMovieFee(screening).getAmount(), is(BigDecimal.valueOf(13200)));
     }
 }
