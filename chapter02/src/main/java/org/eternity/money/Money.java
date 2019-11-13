@@ -4,9 +4,14 @@ import java.math.BigDecimal;
 import java.util.Objects;
 
 public class Money {
+
+    private static final double TAX_PERCENT = 0.1;
+
     public static final Money ZERO = Money.wons(0);
 
     private final BigDecimal amount;
+
+    private BigDecimal tax; //부가세
 
     public static Money wons(long amount) {
         return new Money(BigDecimal.valueOf(amount));
@@ -18,6 +23,7 @@ public class Money {
 
     Money(BigDecimal amount) {
         this.amount = amount;
+        this.tax = this.amount.multiply(BigDecimal.valueOf(TAX_PERCENT)); //부가세 10프로
     }
 
     public Money plus(Money amount) {
@@ -55,6 +61,19 @@ public class Money {
 
     public int hashCode() {
         return Objects.hashCode(amount);
+    }
+
+    public BigDecimal getAmount() {
+        return amount.setScale(0, BigDecimal.ROUND_HALF_EVEN);
+    }
+
+    public BigDecimal getTax() {
+        return tax;
+    }
+
+    //부가세 포함 금액
+    public BigDecimal getTotalAmount() {
+        return (amount.add(tax)).setScale(0, BigDecimal.ROUND_HALF_EVEN);
     }
 
     public String toString() {

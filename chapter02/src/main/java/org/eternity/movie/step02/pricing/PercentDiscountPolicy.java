@@ -15,6 +15,6 @@ public class PercentDiscountPolicy extends DefaultDiscountPolicy {
 
     @Override
     protected Money getDiscountAmount(Screening screening) {
-        return screening.getMovieFee().times(percent);
+        return screening.getMovieFee().times(percent/100);
     }
 }
